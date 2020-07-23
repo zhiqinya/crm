@@ -1,0 +1,263 @@
+<html xmlns:th="http://www.thymeleaf.org">
+<meta charset="utf-8">
+<!-- 用户 -->
+<div id="user">
+  <div>
+  <form class="form-inline">
+  <div class="form-group">
+	<select name="city" id="role" class="form-control">
+		
+		<option value="">请选择用户角色类型</option>
+		<th:block th:each="role:${session.roles}">
+        	<option th:value="${role.id}" th:text="${role.name}">管理员</option>
+		</th:block>
+		
+	</select>
+  </div>
+  <input class="btn btn-default search" type="button" value="查询">
+  <input class="btn btn-default" type="reset" value="重置">
+  <input class="btn btn-default" type="button" value="新增" id="add">
+
+</form>
+</div>
+
+<div>
+	<table class="table table-hover">
+		 <thead>
+		    <tr style="background:#E8E8E8;">
+		      <th>序号</th>
+		      <th>用户名</th>
+		      <th>角色名</th>
+		      <th>状态</th>	 
+			  <th>操作</th>
+		    </tr> 
+		  </thead>
+		  
+		  <tbody th:each="user:${session.users}">
+		    <tr>
+		      <td th:text="${user.id}">1</td>
+		      <td th:text="${user.name}">李四</td>
+		      <td th:text="${user.role.name}">高管</td>
+		      <td>进行中</td>
+		      <td>
+		      	<i  class="layui-icon layui-icon-edit editUser"></i>  
+		      	<i  class="layui-icon layui-icon-delete deleteUser"></i>   
+		      </td>
+		    </tr> 
+         </tbody>
+    </table>
+</div>
+<div class="fenye">
+	<nav aria-label="Page navigation">
+	  <ul class="pagination">
+	    <li>
+	      <a href="#" aria-label="Previous"  th:if="${session.users.hasPrevious()==false}">
+	        <span aria-hidden="true" style="color:#ABABAB">上一页</span>
+	      </a>
+	      <a href="#" aria-label="Previous"  th:if="${session.users.hasPrevious()==true}"
+	       th:onclick="|selectPage(${session.users.number-1})|">
+	         <span aria-hidden="true">上一页</span>
+	      </a>
+	    </li>
+	    
+	    <li th:each="num:${#numbers.sequence(1,session.users.totalPages)}"
+	    th:onclick="|selectPage(${num-1})|"
+	    th:attr="class=(${session.users.number}==${num-1}?'active':'')">
+	    <a th:if="${num}!=0" href="#" th:text="${num}">1</a>
+	    </li>
+	    
+	    <li >
+	     <a href="#" aria-label="Next"  th:if="${session.users.hasNext()==false}">
+	        <span aria-hidden="true"style="color:#ABABAB">下一页</span>
+	     </a>
+	     <a th:onclick="|selectPage(${session.users.number+1})|"  th:if="${session.users.hasNext()==true}">
+	       <span aria-hidden="true">下一页</span>
+	     </a>
+	    </li>
+	    
+	  </ul>
+	</nav>
+</div>
+<!-- 删除模态框 -->
+<div class="modal" id="deleteModal">
+  <div class="modal-dialog"  style="width:350px;">
+    <div class="modal-content">
+      <div class="modal-header">
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+        <h4 class="modal-title">是否确定删除</h4>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-default " data-dismiss="modal">取消</button>
+        <button type="button" class="btn btn-primary">确定</button>
+      </div>
+    </div>
+  </div>
+</div>
+<!-- 新增模态框 -->
+<div class="modal"  id="toAdd">
+  <div class="modal-dialog" style="height:400px;overflow:auto;">
+    <div class="modal-content">
+       <form id="form">
+					<div class="modal-body">
+						<div class="form-group">
+							<label>用户名:</label>
+							<input type="text" name="user" class="form-control">
+						</div>
+						<div class="form-group">
+							<label>密码:</label>
+							<input type="password" name="passwd" class="form-control">
+						</div>
+						<div class="form-group">
+							<label>角色:</label>
+							<select name="Name" id="" class="form-control">
+						           <option value="">请选择用户角色类型</option>
+							       <th:block th:each="role:${session.roles}">
+        							<option th:value="${role.id}" th:text="${role.name}">管理员</option>
+									</th:block>					   
+							</select>
+						</div>
+						<div class="form-group">
+							<label>状态:</label>
+							<select name="flmName" id="" class="form-control">
+						        <option value="1">正常</option>
+						        <option value="2">注销</option>						   
+							</select>
+						</div>
+					</div>
+				</form>
+				<div class="modal-footer">
+				    <button class="btn" style="background:#ccc">取消</button>
+					<button class="btn" style="background:#ccc">保存</button>
+				</div>
+    </div>
+  </div>
+</div>
+
+</div>
+<style>
+#user{
+	width: 1140px;
+	overflow: hidden;
+}
+.pagination > .active > a, .pagination > .active > a:focus, .pagination > .active > a:hover, .pagination > .active > span, .pagination > .active > span:focus, .pagination > .active > span:hover {
+    background-color: #ccc;
+    border-color: #ccc;
+}
+.pagination > li > a, .pagination > li > span {
+    color: black;
+}
+.fenye{
+	margin-left: 400px;
+}
+	.form-inline{
+		margin-top: 15px;
+		margin-left: 10px;
+		margin-bottom: 20px;
+	}
+	.search{
+		margin-left: 50px;
+	}
+	#add{
+		margin-left: 680px;
+	}
+	.table th,td{
+		text-align: center;
+	}
+	#deleteModal{
+		margin-top: 100px;
+	}
+	#toAdd{
+		margin-top: 50px;
+	}
+</style>
+<script type="text/javascript">
+	
+	function selectPage(num){
+	
+		$("#user").load("pageUser",{pageIndex:num})
+	}
+	$(function(){
+		// 显示删除模态框
+		$('.deleteUser').click(function(){
+			$('#deleteModal').show();
+			num = $(this).parent().parent().children().first().text().trim();
+		})
+		// 关闭删除模态框
+		$('.close').click(function(){
+			$('#deleteModal').hide();
+		})
+		// 关闭删除模态框
+		$('.btn-default').click(function(){
+			$('#deleteModal').hide();
+			
+		})
+		// 确定删除
+		$('.btn-primary').click(function(){
+			$('#deleteModal').hide();
+			$.post("deleteUser",{id:num},function(data){
+				alert(data);
+				//重新出发角色管理的点击事件，以达到刷新界面的效果
+				$('#user').load("toUser");
+		});
+		})
+		// 点击新增显示模态框
+		$('#add').click(function(){
+			id=null;
+		
+		 
+			 document.getElementById("form").reset();
+			 $('#toAdd').show();
+		})
+		// 新增模态框关闭
+		$('button:contains(取消)').on('click',function(){
+			$('button[type=reset]').trigger('click');
+		
+				$('#toAdd').hide();
+		})
+		// 新增模态框保存
+		$('button:contains(保存)').on('click',function(){
+				$('#toAdd').hide();
+				
+				var user = $("input[name=user]").val();
+				var passwd = $("input[name=passwd]").val();
+				var rid = $("select[name=Name] option:selected").val();
+				var rFlag = $("select[name=flmName] option:selected").val();
+				//发送ajax请求,将前台输入的数据进行保存
+			
+				$.post("saveUser",{name:user,password:passwd,flag:rFlag,role:rid,id:id},function(data){
+					alert(data);
+					//重新出发角色管理的点击事件，以达到刷新界面的效果
+					$(".layui-nav-child dd:contains(用户管理)").trigger("click");
+				});
+				
+		})	
+		// 点击编辑显示模态框
+		$('.editUser').click(function(){
+			$('#toAdd').show();
+			id = $(this).parent().parent().children().first().text().trim();
+				$.post("getUser",{id:id},function(data){
+				$("input[name=user]").val(data.name);
+				$("input[name=passwd]").val(data.password);
+				$("select[name=Name]").val(data.role.id);
+				$("select[name=flmName]").val(data.flag);
+			})
+			
+			
+		})
+		// 查询
+		$('.search').click(function(){
+			var n = $("#role option:selected").val();
+			if(n.trim()==null){
+				alert("请选择");
+			}else{
+				$('#user').load("toUser",{rid:n});
+			}
+		})
+		
+		$('input[type=reset]').click(function(){
+			var id = null;
+			$('#user').load("toUser",{rid:null});
+		});
+	})
+</script>
+</html>
